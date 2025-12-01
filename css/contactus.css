@@ -1,0 +1,256 @@
+/*Library Contact Form Styles*/
+body {
+    font-family: 'Segoe UI', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+/*form styles*/
+form {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/*table*/
+table {
+    width: 100px;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #eaeaea;
+    vertical-align: top;
+}
+
+td:first-child {
+    width: 35%;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/*label*/
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+/*input, select and textarea styles*/
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select, 
+textarea {
+    /*width: 250%;*/
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+/*focus states ... when user clicks or tabs into form field*/
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+/*textarea specific styles...multi-line text input*/
+textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+/*select dropdown styles*/
+select {
+    background-color: white;
+    cursor: pointer;
+}
+
+/*checkbox styles... for "reply wanted" option*/
+input[type="checkbox"]{
+    transform: scale(1.2);
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+/*submit button styles*/
+input[type="submit"] {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: auto;
+    min-width: 200px;
+}
+
+/*submit button hover state*/
+input[type="submit"]:hover{
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+/*submit button active state*/
+input[type="submit"]:active {
+    transform: translateY(0);
+}
+
+
+/* FORM VALIDATION FIELDS */
+/* required field indicator */
+input:required, select:required, textarea:required {
+    border-left: 4px solid #e74c3c;
+}
+
+/* valid field indicator*/
+input:valid, select:valid, textarea:valid{
+    border-left: 4px solid #2ecc71;
+}
+
+/*checbox labe alignment*/
+input[type="checkbox"] + label {
+    display: inline;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+/* RESPONSIVE DESIGN - for mobile devices */
+/* 
+   MEDIA QUERY - Applies only when screen is 768px wide or less 
+   typical of tablet/mobile breakpoint
+*/
+@media(max-width: 768px){
+    /* mobile body styles */
+    body{
+        /* less padding on small screens to save space */
+        padding: 10px;
+    }
+
+    /* mobile form styles */
+    form {
+        /* less padding on small screens */
+        padding: 20px;
+    }
+
+     /* convert table to block layout for mobile */
+    table {
+        /* change from table to block display */
+        display: block;
+    }
+
+     /* Table row mobile styles ... each row becomes a "card" */
+    tr {
+        /* change table-row to block */
+        display: block;
+        
+        margin-bottom: 15px;
+    
+        padding: 15px;
+        
+        /* light background for each "card" */
+        background: #f9f9f9;
+        
+        border-radius: 6px;
+    }
+
+    /* Table cell mobile styles */
+    td {
+        /* change from table-cell to block...stack vertically */
+        display: block;
+        
+        /* force full width ...important overrides other width rules */
+        width: 100% !important;
+        
+        /* remove borders between cells */
+        border: none;
+        
+        padding: 10px 0;
+    }
+    
+    /* First column ...labels mobile styles */
+    td:first-child {
+        /* dashed line under labels to separate from inputs */
+        border-bottom: 1px dashed #ddd;
+        
+        /* space below the label */
+        padding-bottom: 5px;
+        
+        /* additional space below label */
+        margin-bottom: 5px;
+    }
+}
+
+
+/* Accessibility Enhancements */
+/* focus styles ... for keyboard navigation */
+input:focus, select:focus, textarea:focus {
+    /* blue outline for accessibility ...keyboard users */
+    outline: 2px solid #3498db;
+    
+    outline-offset: 2px;
+}
+
+/* Utility Classes - for dynamic content from PHP */
+/* Loadng state ... when form is being submitted */
+input[type="submit"]:disabled {
+    background: #bdc3c7;
+    
+    /* show "not allowed" cursor */
+    cursor: not-allowed;
+    
+    /* remove transform effect */
+    transform: none;
+}
+
+/* Success message ...PHP form submission success */
+.success-message {
+    background: #d4edda;
+    
+    /* dark green text */
+    color: #155724;
+    
+    padding: 15px;
+    
+    border-radius: 6px;
+    
+    margin-bottom: 20px;
+    
+    border: 1px solid #c3e6cb;
+}
+
+/* Error message ...PHP form submission error */
+.error-message {
+    background: #f8d7da;
+    
+    /* dark red text */
+    color: #721c24;
+    
+    padding: 15px;
+    
+    border-radius: 6px;
+    
+    margin-bottom: 20px;
+    
+    border: 1px solid #f5c6cb;
+}

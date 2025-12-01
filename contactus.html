@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - BSS Library</title>
+    <link rel="stylesheet" href="css/contactus.css">
+</head>
+
+<body>
+    <form action="contactus.php" method="POST">
+        <!-- Hidden honeypot field -->
+        <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+
+        <table cellpadding="12">
+            <tbody>
+                <tr>
+                    <td><label for="fullname">Full Name</label></td>
+                    <td><input type="text" name="fullname" id="fullname" required></td>
+                </tr>
+                <tr>
+                    <td><label for="phone">Phone Number</label></td>
+                    <td><input type="tel" name="phone" id="phone"></td>
+                </tr>
+                <tr>
+                    <td><label for="useremail">Your email</label></td>
+                    <td>
+                        <input type="email" name="useremail" id="useremail" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="memberid">Library Member ID</label></td>
+                    <td><input type="text" name="memberid" id="memberid"></td>
+                </tr>
+                <tr>
+                    <td><label for="subject">Subject</label></td>
+                    <td>
+                        <select name="subject" id="subject" required>
+                            <option value="">Selecet a subject</option>
+                            <option value="general">General Enquiry</option>
+                            <option value="membership">Membership Enquiry</option>
+                            <option value="suggestion">Suggestion</option>
+                            <option value="book-suggestion">Suggest A Book</option>
+                            <option value="book_request">Book Request</option>
+                            <option value="event_info">Event Information</option>
+                            <option value="complaint">Complaint</option>
+                            <option value="donation">Book Donation</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="usermessage">Your message</label></td>
+                    <td>
+                        <textarea name="usermessage" id="usermessage" rows="5" cols="40" required></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="replywanted">Do you want a reply?</label></td>
+                    <td>
+                        <input type="checkbox" name="replywanted" id="replywanted" value="yes">
+                        <label for="replywanted">Yes, please reply to my enquiry</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" value="Send Message"></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+    </form>
+
+</body>
+
+</html>
