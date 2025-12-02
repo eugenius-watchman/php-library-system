@@ -21,7 +21,14 @@
                 </tr>
                 <tr>
                     <td><label for="phone">Phone Number</label></td>
-                    <td><input type="tel" name="phone" id="phone"></td>
+                    <td>
+                        <input type="tel" 
+                               name="phone" 
+                               id="phone"
+                               pattern="[0-9]{10}"
+                               title="Please enter your 10 digit phone number">
+                        <small>example: 023-000-0000</small>
+                    </td>
                 </tr>
                 <tr>
                     <td><label for="useremail">Your email</label></td>

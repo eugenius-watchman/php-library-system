@@ -26,12 +26,37 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         die("Invalid email format");
     }
 
+    // validate phone numver ...if provided, must be 10 digits
+    $formattedPhone = "";
+    if (!empty($phone)) {
+        // remove all non-digit characters
+        $phoneDigits = preg_replace('/\D/', '', $phone);
+
+        // check if its exactly 10 digits
+        if (strlen($phoneDigits) != 10) {
+            die("Phone number must be exactly 10 digits.");
+        }
+
+        // format as xxx-xxx-xxxx
+        $formattedPhone = substr($phoneDigits, 0, 3) . '-' . 
+                          substr($phoneDigits, 3, 3) . '-' . 
+                          substr($phoneDigits, 6, 4);
+    } else {
+        $formattedPhone = "";
+    }
+
+    // submission directory 
+    $submissionDir = 'submissions';
+    if (!file_exists($submissionDir)) {
+        mkdir($submissionDir, 0755, true);
+    }
+
     // create array with form data for JSON storage
     $data = [
         'timestamp' => date('Y-m-d H:i:s'),
         'fullname' => $fullname,
         'email' => $email,
-        'phone' => $phone,
+        'phone' => $formattedPhone,
         'memberid' => $memberid,
         'subject' => $subject,
         'message' => $message,
@@ -39,9 +64,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     ];
 
     // save to JSON file
-    $jsonFile = 'submission/contacts.json';
-    file_put_contents($jsonFile, json_encode($data) . "\n", FILE_APPEND | LOCK_EX);
-    echo "<p>Your message has been submitted successfully!</p>";
+    $jsonFile = 'submissions/contacts.json';
+    if (file_put_contents($jsonFile, json_encode($data) . "\n", FILE_APPEND | LOCK_EX)) {
+        $jsonSuccess = true;
+    } else {
+        $jsonSuccess = false;
+        error_log("Failed to write to $jsonFile. Check permissions.");
+    };
 
     // map subject values to readable labels
     $subjectLabels = [
@@ -67,8 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $emailBody .= "************************\n";
     $emailBody .= "Full Name: $fullname \n";
     $emailBody .= "Email: $email\n";
-    $emailBody .= "Phone: " . ($phone ?: "Not provided") . "\n";
-    $emailBody .= "Member ID" . ($memberid ?: "Not provided") . "\n";
+    $emailBody .= "Phone: " . ($formattedPhone ?: "Not provided") . "\n";
+    $emailBody .= "Member ID: " . ($memberid ?: "Not provided") . "\n";
     $emailBody .= "Subject: $subjectText\n";
     $emailBody .= "Message:\n$message\n";
     $emailBody .= "Reply Wanted: $replywanted\n";
@@ -82,42 +111,58 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
     // send email
-    if (mail($to, $emailSubject, $emailBody, $headers)) {
-        // success - display thank you message
-        echo "<!DOCTYPE html>
-        <html>
-        <head>
-            <title>Message Sent</title>
-            <link rel='stylesheet' href='css/contactus.css'>
-        </head>
-        <body>
-            <div class='container'>
-                <h1>Thank You!</h1>
-                <p>Your message has been successfully sent. We'll get back to you soon.</p>
-                <p>Your message has been logged for our records.</p>
-                <p><a href='index.html'>Return to Homepage</a></p>
-            </div>
-        </body>
-        </html>";
+    $emailSent = @mail($to, $emailSubject, $emailBody, $headers);
+
+    // display message
+    echo "<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Form Submission</title>
+        <link rel='stylesheet' href='css/contactus.css'>
+        <style>
+            .container { max-width: 600px; margin: 50px auto; padding: 20px; }
+            .success { background: #d4edda; color: #155724; padding: 20px; border-radius: 5px; }
+            .warning { background: #fff3cd; color: #856404; padding: 20px; border-radius: 5px; }
+            .error { background: #f8d7da; color: #721c24; padding: 20px; border-radius: 5px; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>";
+    
+    if ($jsonSuccess) {
+        echo "<div class='success'>
+                <h1>✓ Message Saved Successfully!</h1>
+                <p>Thank you, $fullname. Your message has been saved to our system.</p>";
+        
+        if ($emailSent) {
+            echo "<p>A notification has been sent to our library staff.</p>";
+        } else {
+            echo "<div class='warning'>
+                    <p><strong>Note:</strong> Your message was saved, but email notification failed.</p>
+                    <p>Our staff will still review your message from our records.</p>
+                  </div>";
+        }
+        
+        echo "<p>We will respond to you at <strong>$email</strong> if a reply was requested.</p>
+              <p><a href='index.php'>Return to Homepage</a> | <a href='contactus.html'>Send Another Message</a></p>
+              </div>";
     } else {
-        // Email failed - but data was already saved to JSON
-        echo "<!DOCTYPE html>
-        <html>
-        <head>
-            <title>Partial Success</title>
-        </head>
-        <body>
-            <h1>Message Saved!</h1>
-            <p>Your message has been saved to our system, but there was an issue sending the email notification.</p>
-            <p>Our staff will still review your message. Thank you!</p>
-            <p><a href='index.html'>Return to Homepage</a></p>
-        </body>
-        </html>";
+        echo "<div class='error'>
+                <h1>⚠️ System Error</h1>
+                <p>Sorry, there was an error saving your message. Please try again later.</p>
+                <p>You can also contact us directly at library@bss.org</p>
+                <p><a href='contactus.html'>Go Back</a> | <a href='index.php'>Homepage</a></p>
+              </div>";
     }
-} else {
-    // when some one tries to access the page directly without submitting the form
-    header("Location: index.html");
-    exit();
-}
+    
+    echo "</div></body></html>";
+    
+    } else {
+        // when someone tries to access the page directly without submitting the form
+        header("Location: index.php");
+        exit();
+    }
 
 ?>
