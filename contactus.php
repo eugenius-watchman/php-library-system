@@ -1,4 +1,7 @@
 <?php
+require_once 'config/database.php';
+
+
 // check if form was submitted
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // honeypot check ...if this field is filled, then its likely a bot
@@ -7,12 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     // sanitise and validate user input
-    $fullname = htmlspecialchars(trim($_POST['fullname']));
+    $fullname = htmlspecialchars(trim($_POST['fullname'])); //r
     $phone = htmlspecialchars(trim($_POST['phone']));
-    $email = filter_var(trim($_POST['useremail']), FILTER_SANITIZE_EMAIL);
+    $email = filter_var(trim($_POST['useremail']), FILTER_SANITIZE_EMAIL);//r
     $memberid = htmlspecialchars(trim($_POST['memberid']));
     $subject = htmlspecialchars(trim($_POST['subject']));
-    $message = htmlspecialchars(trim($_POST['usermessage']));
+    $message = htmlspecialchars(trim($_POST['usermessage'])); //r
     $replywanted = isset($_POST['replywanted']) ? 'Yes' : 'No';
 
 
@@ -45,7 +48,45 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $formattedPhone = "";
     }
 
-    // submission directory 
+    // ===== Save To DB (Primary Storage) =====
+    $dbSuccess = false;
+    $messageId = null;
+    try {
+        $db = getDB();
+        $stmt = $db->prepare("
+            INSERT INTO contact_messages
+            (fullname, email, phone, member_id, subject, message, reply_wanted)
+            VALUES (:fullname, :email, :phone, :member_id, :subject, :message, :reply_wanted)
+        ");
+
+        // convert empty memberid to NULL for database
+        $dbMemberId = !empty($memberid) ? $memberid : null;
+
+        $stmt->execute([
+            ':fullname' => $fullname,
+            ':email' => $email,
+            ':phone' => $formattedPhone,
+            ':member_id' => $dbMemberId,
+            ':subject' => $subject,
+            ':message' => $message,
+            ':reply_wanted' => $replywanted
+        ]);
+        
+        $dbSuccess = true;
+        $messageId = $db->lastInsertId();
+
+    } catch(PDOException $e) {
+        $dbSuccess = false;
+        error_log("Databae error: " . $e->getMessage());
+
+        // continue to JSON fallback
+    }
+
+    // ==== Fallback: Save to JSON File ====
+    $jsonSuccess = false;
+    if (!$dbSuccess) { // save only to JSON ...if db failed
+        // create submission directory if it dne
+        // submission directory 
     $submissionDir = 'submissions';
     if (!file_exists($submissionDir)) {
         mkdir($submissionDir, 0755, true);
@@ -64,14 +105,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     ];
 
     // save to JSON file
-    $jsonFile = 'submissions/contacts.json';
-    if (file_put_contents($jsonFile, json_encode($data) . "\n", FILE_APPEND | LOCK_EX)) {
-        $jsonSuccess = true;
-    } else {
-        $jsonSuccess = false;
-        error_log("Failed to write to $jsonFile. Check permissions.");
-    };
-
+        $jsonFile = 'submissions/contacts.json';
+        if (file_put_contents($jsonFile, json_encode($data) . "\n", FILE_APPEND | LOCK_EX)) {
+            $jsonSuccess = true;
+        } else {
+            $jsonSuccess = false;
+            error_log("Failed to write to $jsonFile. Check permissions.");
+        }
+    }
     // map subject values to readable labels
     $subjectLabels = [
         'general' => 'General Enquiry',
