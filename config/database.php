@@ -1,5 +1,5 @@
 <?php
-// config/db.php
+// config/database.php
 class Database {
     private $host = "localhost";
     private $db_name = "library-system";
