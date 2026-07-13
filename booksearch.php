@@ -6,13 +6,12 @@
     <title>Book Search - Library System</title>
 
     <link rel="stylesheet" href="css/booksearch.css">
-    <hr>
 </head>
 <body>
     <!-- SEARCH FORM SECTION -->
     <!-- search box -->
     <div class="search-container">
-       <h1>Book Search</h1>
+       <h1>📚 Book Search</h1>
 
        <form method="GET" action="" class="search-form">
           
@@ -75,7 +74,7 @@ if($hasSearch) {
         $errorMessage = 'Please enter at least 2 characters for the title search.';
     }
     if(!empty($searchAuthor) && strlen($searchAuthor) < 2) {
-        $errorMessage = 'Please enter at least 2 characters for the author search.';
+        $errorMessage .= ' Please enter at least 2 characters for the author search.';
     }
 }
 ?>
@@ -91,6 +90,7 @@ if($hasSearch) {
     <!-- No search yet ...display friendly message -->
      <div class="no-results">
         <p style="font-size: 48px; margin-bottom: 20px;">🔎</p>
+        <h3>Search for Books</h3>
         <p>Enter a title or author above to find books in our library.</p>
         <p style="font-size: 14px; color: #aaa; margin-top: 10px;">
             Tip: You can search by title, author or both.
@@ -136,7 +136,7 @@ if($hasSearch) {
 
            // add author search condition ... if author provided
            if (!empty($searchAuthor)) {
-            $sql .=" AND title LIKE :author";
+            $sql .=" AND author LIKE :author";
             $params[':author'] = '%' . $searchAuthor . '%';
             $searchTerms[] = "Author: '" . htmlspecialchars($searchAuthor) . "'";
            }
@@ -176,11 +176,11 @@ if($hasSearch) {
          <!-- Display Result Header -->
           <div class="results-header">
             <h2>Search Results</h2>
-            <span class="result-count">
+            <span class="results-count">
                 <?php
                 // display number of book(s) found
                 echo $resultCount;
-                echo $resultCount !== 1 ? 'books found' : 'book found';
+                echo $resultCount !== 1 ? ' books found' : ' book found';
                 ?>
                 <?php if (!empty($searchTerms)): ?>
                     <!-- display what was searched for-->
@@ -252,8 +252,8 @@ if($hasSearch) {
                 <!-- No Results found -->
                 <div class="no-results">
                     <p style="font-size: 48px; margin-bottom: 20px;">😕</p>
-                    <h3>Sorry! No Books Found</h3>
-                    <p>Sorry! We couldn't find any books matching your search.</p>
+                    <h3>No Books Found</h3>
+                    <p>We couldn't find any books matching your search.</p>
                     <p style="font-size: 14px; color: #aaa; margin-top: 10px;">
                         Try using fewer words or checking your spelling.
                     </p>
